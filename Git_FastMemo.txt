@@ -1,0 +1,24 @@
+SEQUENCE DE CODE
+
+BASIQUE
+--------------------------------------------------------
+Créer dossier projet
+lancer git cmd
+se placer dans le dossier projet
+git init                                        //initialise la liaison entre git et le dossier
+git remote add origin [chemin_projet_github]	//initialise la liaison entre git et github
+faire des modifications dans le dossier
+git status 										//affiche l'état du commit en cours
+git add .  // git add [fichier]					//ajoute les fichiers choisis dans la zone de transit
+git commit -m "nom_commit"						//crée le commit à partir de la zone de transit
+git log											//affiche l'historique des commits
+git push origin master
+--------------------------------------------------------
+
+BRANCHES
+--------------------------------------------------------
+git branch 										//affiche l'arborescence des branches
+git branch [nom_branche]						//crée une branche à partir de la position actuelle
+git checkout [nom_branche]						//se place sur la branche
+git merge [nom_branche]         				//incorpore la branche ciblée
+git branch -d [nom_branche]						//supprime la branche ciblée

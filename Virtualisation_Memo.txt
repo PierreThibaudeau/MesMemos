@@ -1,0 +1,73 @@
+
+
+-.-.-.-.-.-.-.-.-.-VIRTUALISATION-.-.-.-.-.-.-.-.-.-
+
+Snapshot = sauvegarde instantanée
+
+full clone : indépendante
+linked clone : clone fille, dépendant de la mère
+
+format nom VM : OS_version_proc_login_mdp_ButVM
+			 -> w10x64_pierre_puiedeiz_HeartstoneEmul
+
+
+freeze -> settings -> Add -> fodler = partage fichiers
+
+
+
+
+
+
+
+
+-.-.-.-.-.-.-.-.-.-LINUX-.-.-.-.-.-.-.-.-.-
+
+
+/home/syrius/dossiercourant#: mv fichier ../DossierDest         // déplacer un fichier vers un autre dossier
+
+/home/syrius#:         		  rm -r ./*							// supprimer en recursive le contenu du dossier en cours
+		 					
+/#:                    		  find / -name fichier				// recherche d'un fichier grace à son nom
+		 					
+/home/syrius#:         		  grep -n fichier					// recherche de la ligne d'apparition d'un mot
+					
+/home/syrius#:                cat fichier | grep -n mot			// pipe: affichage d'un fichier & recherche de mot
+					
+							  ls -l /home/user > file.txt		// Stockage du résultat de la commande dans un fichier
+
+....						  rm ?[abc]*.tmp                     // supprime tous les fichiers ayant pour deuxième lettre 	commençant par a, b ou c.
+
+apt-get purge                 // detruit un packet non désiré
+
+useradd -m -s /bin/bash doudou
+
+passwd username
+-> passwd
+
+groupadd groupname
+
+usermod -aG groupname username
+
+ITS ALLRIGGGGGHT---------------------
+
+ls -l                 //affichage permissions
+
+chmod u+x noomfichier
+
+chmod 755 nom_fichier
+
+chmod u=rw,g=r,o= nomfichier
+
+chown newuser nomfichier
+
+
+/etc/apt/sources.list
+dhclient -v eth0 
+apt-get update
+apt-get upgrade
+apt-get install vim
+				tree
+vimtutor
+
+
+

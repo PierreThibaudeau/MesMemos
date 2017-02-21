@@ -1,0 +1,103 @@
+Tuto GIT:
+
+-ce placer dans le repertoire de projet
+
+-git init (dans l'invite de commande)
+
+-git help
+
+-'commande' --help ->page navigateur
+
+-git status
+
+-git add 'file' -> include file in commit
+
+-git --config user.email "blabla@gmail.com"
+
+-git --config user.name "Prenom NOM"
+
+-git commit -m "Intitulé_Changement" ->créer un commit, avec un nom
+
+-git commit -a -m "I_C" -> créer un commit incluant tout les fichiers tracked.modified
+
+-git commit -a -m "I_C" --amend ->ajoute les changements au commit précedent au lieu d'en recreer un/ 													donne l'occasion de change le nom du commit
+
+-git log -> historique commit avec créateur --stat -> + infos  --graph -> branches parallèles
+
+git add -A ->ajoute tous les fichiers dans la zone de transit
+
+git reset HEAD 'file' ->enlève le fichier de la zone de transit
+
+git checkout 'n° commit' -> affiche le commit selectionné
+
+git checkout master -> remet la tête de lecture sur la branche principale
+
+git reset 'n° commit' --hard -> retourne à un ancien commit en supprimant tous les commits anterieurs
+
+git reset HEAD^ --soft -> replace le dernier commit dans la zone de transit
+
+git reset HEAD~5 --soft -> replace les 5 derniers commit dans la zone de transit
+
+git diff HEAD-> différence entre le commit pointé par la tête de lecture et le working directory
+
+git diff 'n° commit' -> différence entre le commit précisé et le working directory
+
+git diff 'n° commit1' 'n° commit2' -> différence entre le commit1 et le commit2
+
+Status fichiers dans git: 
+	-untracked (pas encore géré par git)
+	-unmodified (explicit)
+	-modified (explicit)
+	-staged (dans la zone de transit)
+
+
+
+	POUR GITHUB:
+
+git remote add origin https://github.com/groupe/name.git -> creer le lien entre le working directory et le repository
+
+git push origin master  -> envoie le code sur le repository
+
+git pull origin master  -> prend le code sur le repository
+
+git clone https://github.com/groupe/name.git  ->pull
+
+git branch 'branchname' ->creer une branche de dev parallèle
+
+git checkout 'branchname'  -> switch to the choosen branch
+
+git merge 'branchname' -> fusionne la branche parallèle avec la principale
+
+gir branch -d 'branchname' -> delete branch
+
+
+
+
+
+
+
+
+SEQUENCE DE CODE
+
+BASIQUE
+--------------------------------------------------------
+Créer dossier projet
+lancer git cmd
+se placer dans le dossier projet
+git init                                        //initialise la liaison entre git et le dossier
+git remote add origin [chemin_projet_github]	//initialise la liaison entre git et github
+faire des modifications dans le dossier
+git status 										//affiche l'état du commit en cours
+git add .  // git add [fichier]					//ajoute les fichiers choisis dans la zone de transit
+git commit -m "nom_commit"						//crée le commit à partir de la zone de transit
+git log											//affiche l'historique des commits
+git push origin master
+--------------------------------------------------------
+
+BRANCHES
+--------------------------------------------------------
+git branch 										//affiche l'arborescence des branches
+git branch [nom_branche]						//crée une branche à partir de la position actuelle
+git checkout [nom_branche]						//se place sur la branche
+git merge [nom_branche]         				//incorpore la branche ciblée
+git branch -d [nom_branche]						//supprime la branche ciblée

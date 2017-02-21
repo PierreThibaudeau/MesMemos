@@ -1,0 +1,105 @@
+<title attribut1="valeur1", attribut2="valeur2"> </title>
+<br>
+
+<meta charset="utf-8">
+
+
+Offres d'emplois commentaires sites ctrl+maj+i
+
+
+attributs :
+
+id   		:identifiant unique	
+class		:nom de classe Css
+hidden		:indique la visibilité de l'élément
+style		:inutile, puisque css
+name		:donne un nom à l'élément (formulaire)
+title		:info-bulle
+lang		:spécifie la langue du contenu
+
+13 grands ensembles des balises :
+
+marquage sémantique
+Listes
+Tables
+Hyperliens
+inclusion d'objets
+élements de regroupements
+style de présentation
+marquage de présentation de texte //déconseillé -> CSS
+Cadres (frames, inclusion d'autres pages)
+formulaire pour insertions interactive de données
+scripts
+
+CSS :
+id = #
+class = .
+balise = balise
+
+
+
+<select>
+	<option value=0></option>
+	<option value=1></option>
+	<option value=2></option>
+	<option value=3></option>
+	<option value=4></option>
+	<option value=5></option>
+</select
+
+
+
+
+
+
+
+
+
+<table border="1" cellpadding="1" cellspacing="1" >
+					<tbody> 
+						<tr>  		
+							<td rowspan="2"  >1</td>
+							<td>2</td>
+							<td>3</td>
+							<td>4</td>
+
+						</tr>
+						<tr>  		
+							<td>5</td>
+							
+							<td>7</td>
+							<td>8</td>
+
+						</tr>
+						<tr>  		
+							<td>9</td>
+							<td rowspan="2">21</td>
+
+							<td colspan="2" align="center">22</td>
+							
+						</tr>
+						<tr >  		
+							<td>10</td>
+							<td rowspan="3">11</td>
+							<td>12</td>
+
+						</tr>
+						<tr>  		
+							<td colspan="2" align="center">13</td>
+							
+							
+							<td>16</td>
+
+						</tr>
+						<tr>  		
+							<td>17</td>
+							<td>18</td>
+							
+							<td>20</td>
+
+						</tr>
+
+					</tbody>	
+				</table>
+
+

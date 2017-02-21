@@ -1,0 +1,79 @@
+
+id = #
+class = .
+balise = balise
+
+
+
+@font-face
+{
+	src: lienPolice
+	font-family: DefnomPolice
+}
+
+div
+{
+	font-family: nomPolice
+}
+
+
+background-image: url('path')
+
+--------------------------------
+selecteurs:
+balise{}
+#id{}
+.classe{}
+balise.classe{}
+balise balise balise.classe{}
+balise.classe balise.id etc...{}
+balise:first-child balise{}        //deuxième élement non atteint
+input[type=toto]{}
+
+---------------------------------
+*{} impact tout le code
+---------------------------------
+
+
+transition-timing-fonction
+
+
+@media (min-width : 600px) and (max-width : 800px)
+{
+	
+}
+@media (max-width : 600px) , (min-width : 800px)
+{
+	
+}
+@media (orientation:portrait)
+{
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

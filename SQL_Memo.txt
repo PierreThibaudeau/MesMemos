@@ -1,0 +1,1028 @@
+
+-----------------------------REQUÊTES MAJEURES---------------------------------
+
+CREATE DATABASE nom;
+CREATE TABLE nom(attribut1 type, attribut2 type,PRIMARY KEY(attribut1));
+INSERT INTO table (attribut1, attribut2) VALUES ('Value1','Value2');
+SELECT * / attribut FROM table;
+UPDATE table SET attribut="value";
+DELETE FROM table;
+SELECT COUNT(* / attribut / DISTINCT attribut) FROM table;
+SELECT attribut1 FROM table WHERE attribut2='value';
+UPDATE table SET attribut1='value1' WHERE attribut2='value2'
+DELETE FROM table WHERE attribut='value';
+SELECT*FROM table ORDER BY attribut ASC / DESC;
+SELECT*FROM table WHERE attribut='value' ORDER BY attribut LIMIT value OFFSET value;
+SELECT*FROM table WHERE attribut1='value1' AND attribut2='value2' OR attribut1='value3' AND attribut2='value4'  // AND=Multiplier / OR=Additionner
+ALTER TABLE table DROP COLUMN attribut;
+ALTER TABLE table ADD COLUMN attribut;
+ALTER TABLE table ADD FOREIGN KEY (attribut) REFERENCES table(id)                #création de l'attribut en tant que foreign key 
+
+
+
+Créer table liaison:
+
+	CREATE TABLE commande(
+	  id int NOT NULL AUTO_INCREMENT,
+	  id_article int,
+	  id_utilisateur int,
+	  amount int,
+	  PRIMARY KEY (id),
+	  id_article (id_article),
+	  id_utilisateur (id_utilisateur)
+	);
+
+Lier les Clés avec les tables:
+
+	ALTER TABLE commande
+  	  ADD CONSTRAINT contraint_1 FOREIGN KEY (id_article) REFERENCES article (id),
+  	  ADD CONSTRAINT contraint_2 FOREIGN KEY (id_utilisateur) REFERENCES utilisateur (id);
+
+Double clé primaire:
+ 
+	ALTER TABLE sales ADD PRIMARY KEY(id_users,id_products);
+
+Commande de recherche par table de liaison:
+
+	SELECT utilisateur.nom, utilisateur.prenom, article.titre, commande.amount, (article.prix*commande.amount) Total 
+	  FROM utilisateur, article, commande 
+	  WHERE utilisateur.id = commande.id_utilisateur 
+	    AND article.id = commande.id_article 
+	  ORDER BY Total;
+
+Création utilisateur:
+ 
+	CREATE USER 'host'@'localhost' 
+	  IDENTIFIED BY 'password' ;
+
+Privilèges:
+
+	GRANT ALL PRIVILEGES[/ SELECT / INSERT / ETC...]
+	  ON Base.Table
+	  TO 'host'@'localhost';
+
+SOMME de Colonne;
+
+	SELECT SUM(tarif) 
+	  FROM achats;
+Moyenne:
+
+	SELECT AVG(tarif) FROM achats WHERE 1
+
+Regrouper les doublons:
+
+	SELECT client, SUM(tarif) 
+	  FROM achats 
+	  GROUP BY(client)
+
+Imbriquer des requetes:
+
+	SELECT * FROM users 
+	  WHERE id_job= (SELECT id FROM jobs WHERE titre='développeur');
+
+INNER JOIN:
+	
+	SELECT * FROM Table1 INNER JOIN Table2 ON Table1.Colonne1 = Table2.Colonne2  // intersection des deux tables
+
+LEFT JOIN:
+
+	SELECT * FROM Table1 LEFT JOIN Table2 ON Table1.Colonne1 = Table2.Colonne2   // intersection + table1
+
+RIGHT JOIN:
+
+	SELECT * FROM Table1 RIGHT JOIN Table2 ON Table1.Colonne1 = Table2.Colonne2   // intersection + table2
+	
+
+CRÉATION BOUTIQUE VIERGE:
+
+	CREATE DATABASE MarchéPropre;
+	USE MarchéPropre;
+	CREATE TABLE Categorie(
+	        id   Int NOT NULL AUTO_INCREMENT,
+	        name Varchar (50) ,
+	        PRIMARY KEY (id )
+	);
+	CREATE TABLE Products(
+	        Id           Int NOT NULL AUTO_INCREMENT ,
+	        name         Varchar (50) ,
+	        price        Int ,
+	        id_categorie Int NOT NULL ,
+	        PRIMARY KEY (id)
+	);
+	CREATE TABLE Users(
+	        id        Int NOT NULL AUTO_INCREMENT,
+	        firstname Varchar (50) ,
+	        lastname  Varchar (50) ,
+	        PRIMARY KEY (id )
+	);
+	CREATE TABLE Sales(
+	        quantity    Int ,
+	        id_users    Int NOT NULL ,
+	        id_products Int NOT NULL ,
+	        PRIMARY KEY (id_users ,id_products )
+	);
+	
+	ALTER TABLE products 
+		ADD CONSTRAINT FK_products_id_categorie FOREIGN KEY (id_categorie) 
+		REFERENCES categorie(id);
+	
+	ALTER TABLE sales 
+		ADD CONSTRAINT FK_sales_id FOREIGN KEY (id_users) 
+		REFERENCES users(id);	
+
+	ALTER TABLE sales 
+		ADD CONSTRAINT FK_sales_id_products FOREIGN KEY (id_products) 
+		REFERENCES products(id);
+
+
+Nb_Mobilier -> DATABASE boutique:
+
+	SELECT COUNT(P.name)
+	  FROM category C
+	   INNER JOIN products P
+	    ON P.id_category=C.id 
+	  AND C.name='mobilier'
+
+Nb_Mobilier commandé -> DATABASE boutique:
+
+	SELECT SUM(S.quantity) QuantitéTotale
+	  FROM sales S
+	   INNER JOIN products P
+	    ON S.id_product=P.id 
+	   INNER JOIN category C
+	    ON P.id_category=C.id 
+	  AND C.name='mobilier'
+
+Nb_NOUNOURS -> DATABASE boutique:
+
+	SELECT SUM(S.quantity) QuantitéTotale, P.price prix, (SUM(S.quantity)*P.price) PrixTotal 
+	  FROM sales S
+	   INNER JOIN products P 
+	    ON S.id_product = P.id 
+	   AND P.name = 'ours en peluche'
+
+BASE ENTIERE -> DATABASE boutique:
+
+	SELECT CONCAT(U.firstname,' ', U.lastname) Name, P.name, C.name, S.quantity, P.price,  (P.price*S.quantity) TotalPrix
+	  FROM users U
+	   INNER JOIN sales S
+	    ON S.id_user=U.id 
+	   INNER JOIN products P
+	    ON P.id=S.id_product 
+	   INNER JOIN category C
+            ON P.id_category=C.id
+       	  GROUP BY Name
+          ORDER BY TotalPrix
+
+PANIER MOYEN GLOBAL -> DATABASE boutique
+
+	SELECT AVG(price*quantity) PanierMoyen
+	FROM users
+	 LEFT JOIN sales
+	  ON sales.id_user=users.id 
+	 LEFT JOIN products 
+	  ON products.id=sales.id_product 
+
+PANIER Total/CLIENT -> DATABASE boutique
+
+	SELECT users.firstname, users.lastname, SUM(sales.quantity*products.price )PanierTotal
+	  FROM users
+	   LEFT JOIN sales
+	    ON sales.id_user=users.id 
+	   INNER JOIN products 
+	    ON products.id=sales.id_product 
+          GROUP BY(users.lastname)
+          ORDER BY PanierTotal;
+	  
+MEILLEURES VENTES -> DATABASE boutique
+
+	SELECT products.name, category.name, SUM(sales.quantity) BESTOF
+          FROM sales
+	   INNER JOIN products
+	    ON sales.id_product=products.id 
+	   INNER JOIN category 
+	    ON category.id=products.id_category 
+      	  GROUP BY(products.name)
+          ORDER BY BESTOF DESC;
+
+
+-------------------------------COMMANDES SOURCES-----------------------------
+
+HAVING   : WHERE utilisant les fonctions SUM(), COUNT(), AVG(), MIN() ou MAX()
+
+	EXEMPLE:
+
+		SELECT type_id, ROUND(avg(duree),0) AS Moyenne
+		FROM programmes 
+		GROUP BY type_id 
+		HAVING avg(duree) > 90
+ 
+GROUP BY : fait le total des enrengistrements en fonction d'un champ
+ 
+ORDER BY : Tri l'affichage en fonction d'un champ (DESC ou ASC)
+ 
+IN       : série de valeur IN(valeur,valeur,valeur,...) (au lieu d'un 'valeur OR valeur OR valeur ...')
+
+LIKE     : Outil de recherche dans un string  (%exemple%)
+
+UNION    :
+     
+CASE     :
+     
+LIMIT    : Limite le nombre d'enrengistrements affichés, peut etre accompagné d'un OFFSET pour effectuer un décalage d'affichage.
+
+FLOOR : troncature à l'entier près
+CEILING : Arrondi à l'entier près
+ROUND : arrondi 
+TRIM : Supprime les espaces au début ou  la fin d'un chaine de caractere.
+CONCAT: concatène les arguments
+SUBSTRING: renvoie une sous-chaîne de champ à partir du n°ième
+
+
+--------------------------------COURS SQL--------------------------------
+
+
+
+DQL : SELECT
+DML : INSERT, UPDATE, DELETE
+DDL : CREATE DROP ALTER
+DCL : GRAT REVOKE COMMIT ROLLBACK
+
+CSV, JSON, XML -> échange de BdD sous forme de fichiers
+
+Champ = colonne, enrengistrement = ligne
+
+	{}   -> élement obligatoire
+	[]   -> élement facultatif
+	|    -> choix  
+
+	SELECT{* | champ1 [, champ2, ...]}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-.-.-.-.-.-.-.-.-.-.-.-.-.-EXERCICES-.-.-.-.-.-.-.-.-.-.-.-.-.-
+
+EXERCICE 1-------------------
+
+	SELECT  c.nom_chaine, plan.date_diffusion, 	prog.nom_programme
+	FROM chaine AS c
+	INNER JOIN programmation AS plan
+		ON c.chaine_id=plan.chaine_id 
+		AND c.nom_chaine='france 2'
+	INNER JOIN programmes AS prog
+		ON plan.programme_id=prog.programme_id 
+		AND (plan.date_diffusion = '2015-05-01' OR 	plan.date_diffusion = '2015-05-03')
+
+	BONUS~~~~~~~~~~~~~~~~~~
+
+	SELECT p.chaine_id, p.date_diffusion, p.programme_id
+	FROM programmation AS p
+	WHERE (p.chaine_id = 2 OR p.chaine_id = 3)
+	AND (p.date_diffusion = '2015-05-01' OR p.date_diffusion = '2015-05-03')
+
+EXERCICE 2-------------------
+
+	SELECT  c.nom_chaine, plan.date_diffusion, prog.nom_programme
+	FROM chaine AS c
+	INNER JOIN programmation AS plan
+		ON c.chaine_id=plan.chaine_id 
+		AND (c.nom_chaine='france 2' OR c.nom_chaine='france 3')
+	INNER JOIN programmes AS prog
+		ON plan.programme_id=prog.programme_id 
+		AND (plan.date_diffusion = '2015-05-01' OR plan.date_diffusion = '2015-05-03')
+
+	BONUS~~~~~~~~~~~~~~~~~~
+
+	SELECT p.chaine_id, p.date_diffusion, p.programme_id
+	FROM programmation AS p
+	WHERE p.chaine_id IN (2,3)
+	AND (p.date_diffusion = '2015-05-01' OR p.date_diffusion = '2015-05-03')
+
+EXERCICE 3-------------------
+
+	SELECT c.nom_chaine, c.ville
+	FROM chaine AS c 
+	WHERE c.code_postal LIKE '75%'
+		OR c.code_postal LIKE '77%'
+	    OR c.code_postal LIKE '78%'
+	    OR c.code_postal LIKE '91%'
+	    OR c.code_postal LIKE '92%'
+	    OR c.code_postal LIKE '93%'
+	    OR c.code_postal LIKE '94%'
+	    OR c.code_postal LIKE '95%'
+
+	BONUS~~~~~~~~~~~~~~~~~~
+	SELECT c.nom_chaine, c.ville
+	FROM chaine AS c 
+	WHERE SUBSTRING(c.code_postal,1,2) IN ('75','77','78','91','92','93','94','95')
+
+EXERCICE 4-------------------
+
+	SELECT prog.nom_programme AS Programme, CONCAT(FLOOR(prog.duree/60) , ' H ', prog.duree-FLOOR(prog.duree/60)*60, ' mn') AS TIME
+	FROM programmes AS prog
+
+	BONUS~~~~~~~~~~~~~~~~~~
+
+	SELECT prog.nom_programme AS Programme, CONCAT(FLOOR(prog.duree/60) , ' H ', prog.duree%60, ' mn') AS TIME
+	FROM programmes AS prog
+
+EXERCICE 5-------------------
+
+	SELECT prog.nom_programme
+	FROM programmes AS prog
+	WHERE prog.nom_programme LIKE '%sport%'
+
+EXERCICE 6-------------------
+
+	SELECT COUNT(DISTINCT prog.nom_programme)
+	FROM programmes AS prog
+
+EXERCICE 7-------------------
+
+	SELECT prog.nom_programme, prog.duree
+	FROM programmes AS prog
+	ORDER BY prog.duree DESC, prog.nom_programme ASC
+
+EXERCICE 8-------------------
+
+	SELECT r.nom_realisateur AS Realisateur, prog.nom_programme AS programme, c.nom_chaine AS Chaine
+	FROM realisateur AS r
+		INNER JOIN programmes AS prog
+			ON r.realisateur_id = prog.realisateur_id
+		INNER JOIN programmation AS plan
+			ON prog.programme_id = plan.programme_id
+		INNER JOIN chaine AS c
+			ON plan.chaine_id = c.chaine_id AND c.payante = 1
+		GROUP BY r.nom_realisateur	
+
+EXERCICE 9-------------------
+
+
+	SELECT prog.nom_programme, COUNT(DISTINCT(c.nom_chaine)) AS Compteur
+	FROM programmes AS prog
+	INNER JOIN programmation AS plan
+		ON prog.programme_id = plan.programme_id
+	INNER JOIN chaine AS c 
+		ON c.chaine_id = plan.chaine_id 
+		GROUP BY prog.nom_programme
+	HAVING Compteur>1
+	ORDER BY 2, 1
+
+EXERCICE 10------------------
+
+	SELECT  c.nom_chaine, plan.date_diffusion, COUNT(prog.nom_programme) AS nb_programmes
+	FROM chaine AS c 
+	INNER JOIN programmation AS plan
+		ON c.chaine_id = plan.chaine_id
+	INNER JOIN programmes AS prog
+		ON prog.programme_id = plan.programme_id AND plan.heure >= '12:00:00'
+		GROUP BY c.chaine_id, plan.date_diffusion
+	HAVING COUNT(prog.nom_programme)>1
+	ORDER BY 3
+
+EXERCICE 11------------------
+
+	SELECT prog.nom_programme, COUNT(DISTINCT(plan.chaine_id)) AS Compteur
+	FROM programmes AS prog
+	INNER JOIN programmation AS plan
+		ON prog.programme_id = plan.programme_id
+	INNER JOIN chaine AS c
+		ON plan.chaine_id = c.chaine_id
+		GROUP BY prog.nom_programme
+	HAVING Compteur >1
+
+EXERCICE 12------------------
+
+	SELECT r.nom_realisateur, COUNT(DISTINCT(plan.chaine_id)) AS Compteur
+	FROM realisateur AS r
+	INNER JOIN programmes AS prog
+		ON r.realisateur_id = prog.realisateur_id
+	INNER JOIN programmation AS plan
+		ON prog.programme_id = plan.programme_id
+	INNER JOIN chaine AS c
+		ON plan.chaine_id = c.chaine_id
+	GROUP BY r.nom_realisateur
+	HAVING Compteur >1
+
+EXERCICE 13------------------
+
+	SELECT prog.nom_programme, t.libelle, plan.heure
+	FROM type_diffusion AS t
+	INNER JOIN programmes AS prog
+	ON t.type_id = prog.type_id
+	INNER JOIN programmation AS plan
+	ON prog.programme_id = plan.programme_id
+	INNER JOIN chaine AS c
+		ON plan.chaine_id = c.chaine_id 
+		AND t.libelle = 'pour adulte'
+		AND plan.heure = '12:00:00'
+	GROUP BY prog.nom_programme
+
+EXERCICE 14------------------
+
+	SELECT prog.nom_programme, c.nom_chaine,r.nom_realisateur, t.libelle, plan.date_diffusion, plan.heure
+	FROM type_diffusion AS t
+	INNER JOIN programmes AS prog
+		ON t.type_id = prog.type_id
+	INNER JOIN realisateur AS r
+		ON r.realisateur_id = prog.realisateur_id
+	INNER JOIN programmation AS plan
+		ON prog.programme_id = plan.programme_id
+	INNER JOIN chaine AS c
+		ON plan.chaine_id = c.chaine_id 
+	ORDER BY plan.date_diffusion, plan.heure;
+
+EXERCICE 15------------------
+
+	SELECT r.nom_realisateur
+	FROM realisateur AS r
+	INNER JOIN programmes AS prog
+		ON r.realisateur_id = prog.realisateur_id
+	INNER JOIN programmation AS plan
+		ON prog.programme_id = plan.programme_id
+	INNER JOIN chaine AS c
+		ON plan.chaine_id = c.chaine_id
+        AND c.ville = 'boulogne billancourt'
+        GROUP BY r.nom_realisateur
+
+EXERCICE 16------------------
+
+	SELECT prog.nom_programme, r.nom_realisateur
+	FROM realisateur AS r
+	INNER JOIN programmes AS prog
+		ON r.realisateur_id = prog.realisateur_id
+		AND LOCATE(prog.nom_programme, r.nom_realisateur) != 0
+
+EXERCICE 17------------------
+
+	SELECT c.adresse, GROUP_CONCAT(c.nom_chaine SEPARATOR ', ') AS Chaines
+	FROM chaine AS c
+	GROUP BY c.adresse
+	HAVING COUNT(c.nom_chaine) > 1
+
+BONUS_VIRTUAL~~~~~~~~~~~~~~~~~
+
+	SELECT c.nom_chaine AS Coloc, c.adresse AS Adresse
+	FROM chaine AS c
+	INNER JOIN (SELECT c2.adresse AS Adresse2
+				FROM chaine AS c2
+				GROUP BY c2.adresse 
+	            HAVING COUNT(c2.chaine_id)>1) AS c2
+	ON c.Adresse = c2.Adresse2
+
+EXERCICE 18------------------
+
+	SELECT AVG(prog.duree), r.nom_realisateur
+	FROM realisateur AS r
+	INNER JOIN programmes AS prog
+		ON r.realisateur_id = prog.realisateur_id
+	GROUP BY r.nom_realisateur
+
+EXERCICE 19------------------
+
+	SELECT prog.nom_programme, t.libelle
+	FROM programmes AS prog
+	INNER JOIN type_diffusion AS t
+		ON t.type_id = prog.type_id
+	ORDER BY 2, 1
+
+EXERCICE 20------------------
+
+	SELECT CONCAT(FLOOR(SUM(prog.duree)/60), ' h ', SUM(prog.duree)%60, ' mn') AS DureeTotale, c.nom_chaine AS NomChaine, plan.date_diffusion AS Date
+	FROM programmes AS prog
+	INNER JOIN programmation AS plan
+		ON prog.programme_id = plan.programme_id
+    INNER JOIN chaine AS c
+    	ON plan.chaine_id = c.chaine_id
+		AND plan.date_diffusion = '2015-05-01'
+    GROUP BY c.nom_chaine
+
+EXERCICE 21------------------
+
+	SELECT CONCAT(FLOOR(SUM(prog.duree)/60), ' h ', SUM(prog.duree)%60, ' mn') AS DureeTotale, c.nom_chaine, plan.date_diffusion AS Date
+	FROM programmes AS prog
+	INNER JOIN programmation AS plan
+		ON prog.programme_id = plan.programme_id
+    INNER JOIN chaine AS c
+    	ON plan.chaine_id = c.chaine_id
+		AND plan.date_diffusion = '2015-05-01'
+        AND c.nom_chaine = 'Canal +'
+    GROUP BY c.nom_chaine
+
+EXERCICE 22------------------
+
+	SELECT r.nom_realisateur, prog.nom_programme, prog.duree
+	FROM programmes AS prog
+	INNER JOIN realisateur AS r
+		ON prog.realisateur_id = r.realisateur_id
+	ORDER BY prog.duree DESC
+	   LIMIT 1
+
+EXERCICE 23(LEFT JOIN)-------
+
+SELECT r.nom_realisateur, COUNT(prog.nom_programme) AS Nb_Programmes
+FROM realisateur AS r
+LEFT JOIN programmes As prog
+ON r.realisateur_id = prog.realisateur_id
+GROUP BY r.nom_realisateur
+HAVING Nb_Programmes = 0;
+
+EXERCICE 24-Selectionner le programme en doublon.
+
+SELECT DISTINCT prog.nom_programme 
+FROM programmes AS prog
+WHERE EXISTS(
+  SELECT prog2.nom_programme
+  FROM programmes AS prog2
+  WHERE prog.programme_id != prog2.programme_id
+  AND prog.nom_programme = prog2.nom_programme
+);
+
+EXERCICE 25-Afficher les chaines dont la moyenne des durées des émissions diffusées dépasse la durée moyenne des émissions diffusées sur Canal +.
+
+SELECT c.nom_chaine, AVG(prog.duree) AS dureemoy
+FROM chaine AS c 
+INNER JOIN programmation AS plan 
+ON c.chaine_id = plan.chaine_id
+INNER JOIN programmes AS prog
+ON plan.programme_id = prog.programme_id
+GROUP BY c.nom_chaine
+HAVING dureemoy > (SELECT AVG(prog.duree)
+				   FROM chaine AS c 
+				   INNER JOIN programmation AS plan 
+					 ON c.chaine_id = plan.chaine_id 
+      				 AND c.nom_chaine = 'Canal +'
+				   INNER JOIN programmes AS prog
+					 ON plan.programme_id = prog.programme_id)
+
+EXERCICE 26-Donner les réalisateurs ayant été diffusés sur plus d une chaîne.
+
+SELECT r.nom_realisateur AS Réalisateur, COUNT(DISTINCT c.nom_chaine)
+FROM realisateur AS r
+INNER JOIN programmes AS prog
+	ON r.realisateur_id = prog.realisateur_id
+INNER JOIN programmation AS plan
+	ON prog.programme_id = plan.programme_id
+INNER JOIN chaine AS c 
+	ON plan.chaine_id = c.chaine_id
+GROUP BY Réalisateur
+HAVING COUNT(DISTINCT c.nom_chaine)>1
+
+EXERCICE 27- Quelles sont les chaines diffusant plus de programmes le 03 mai que canal + ?
+
+SELECT c.nom_chaine AS Chaine, plan.date_diffusion AS Date, COUNT(prog.nom_programme) AS nb_programmes
+FROM chaine AS c
+INNER JOIN programmation AS plan
+ON plan.chaine_id = c.chaine_id
+INNER JOIN programmes AS prog 
+ON prog.programme_id = plan.programme_id AND plan.date_diffusion = '2015-05-03'
+GROUP BY 1
+HAVING nb_programmes >= (SELECT COUNT(prog.nom_programme)
+				   		FROM chaine AS c 
+				   		INNER JOIN programmation AS plan 
+					 		ON c.chaine_id = plan.chaine_id AND c.nom_chaine = 'Canal +'
+				   		INNER JOIN programmes AS prog
+					 		ON plan.programme_id = prog.programme_id AND plan.date_diffusion = '2015-05-03')
+                         
+EXERCICE 28- Quels sont les premiers et derniers programmes diffusés ?
+
+(SELECT GROUP_CONCAT(prog.nom_programme SEPARATOR ', '), MAX(plan.date_diffusion) AS datemax, MAX(plan.heure) AS heuremax
+FROM programmation AS plan
+INNER JOIN programmes AS prog
+ON prog.programme_id = plan.programme_id
+GROUP BY CONCAT(plan.date_diffusion, ', ', plan.heure) DESC LIMIT 1 )
+
+UNION
+
+(SELECT GROUP_CONCAT(prog.nom_programme SEPARATOR ', '), MIN(plan.date_diffusion) AS datemin, MIN(plan.heure) AS heuremin
+FROM programmation AS plan
+INNER JOIN programmes AS prog
+ON prog.programme_id = plan.programme_id
+GROUP BY CONCAT(plan.date_diffusion, ', ', plan.heure) ASC LIMIT 1 );						 
+
+EXERCICE 29- Quels sont les réalisateurs ayant réalisé des programmes destinés à des publics différents ?            
+	
+SELECT r.nom_realisateur AS Réalisateur, COUNT(DISTINCT t.libelle)
+FROM realisateur AS r
+INNER JOIN programmes AS prog
+	ON r.realisateur_id = prog.realisateur_id
+INNER JOIN type_diffusion AS t
+	ON t.type_id = prog.type_id
+GROUP BY Réalisateur
+HAVING COUNT(DISTINCT t.libelle)>1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-.-.-.-.-.-.-.-.-.-.-.-.-.-BdD TARIF-.-.-.-.-.-.-.-.-.-.-.-.-.-
+
+CREATE TABLE IF NOT EXISTS `articles` (
+ `article_id` int(11) NOT NULL,
+ `libelle` varchar(30) COLLATE latin1_general_cs NOT NULL,
+ PRIMARY KEY(article_id)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
+
+
+
+INSERT INTO `articles` (`article_id`, `libelle`) VALUES
+(1, 'PC'),(2, 'Ecran'),(3, 'Clavier'),(4, 'Souris');
+CREATE TABLE IF NOT EXISTS `tarif` (
+ `tarif_id` int AUTO_INCREMENT,
+ `article_id` int(11) NOT NULL,
+ `qteminimum` int(11) NOT NULL,
+ `qtemaximum` int(11) NOT NULL,
+ `prix` double NOT NULL,
+  PRIMARY KEY(tarif_id)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
+
+INSERT INTO `tarif` (`article_id`, `qteminimum`, `qtemaximum`, `prix`) VALUES
+(1, 1, 9, 500),(1, 10, 100, 400),(2, 1, 9, 150),(2, 10, 100, 120),
+(3, 1, 9, 50),(3, 10, 100, 45),(4, 1, 9, 30),(4, 10, 100, 20);
+CREATE TABLE IF NOT EXISTS `tarifpromo` (
+ `tarifpromo_id` int AUTO_INCREMENT,
+ `article_id` int(11) NOT NULL,
+ `qteminimum` int(11) NOT NULL,
+ `qtemaximum` int(11) NOT NULL,
+ `prix` double NOT NULL,
+  PRIMARY KEY(tarifpromo_id)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
+INSERT INTO `tarifpromo` (`article_id`, `qteminimum`, `qtemaximum`, `prix`)
+VALUES
+(1, 10, 100, 350),(2, 1, 9, 130),(2, 10, 100, 100),(3, 1, 9, 48),(3, 10, 100,
+42);
+CREATE TABLE IF NOT EXISTS `ventes` (
+ `vente_id` int(11) NOT NULL,
+ `article_id` int(11) NOT NULL,
+ `qte` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_cs;
+
+ALTER TABLE ventes ADD PRIMARY KEY(vente_id, article_id);
+
+INSERT INTO `ventes` (`vente_id`, `article_id`, `qte`) VALUES
+(1, 1, 30),(1, 4, 5),(2, 2, 1),(3, 1, 1),(3, 2, 25),(3, 3, 12),(3, 4, 1);
+
+
+ALTER TABLE tarif
+    ADD CONSTRAINT contraint_1 FOREIGN KEY (article_id) REFERENCES articles (article_id)
+ALTER TABLE tarifpromo
+    ADD CONSTRAINT contraint_2 FOREIGN KEY (article_id) REFERENCES articles (article_id)
+ALTER TABLE ventes
+    ADD CONSTRAINT contraint_3 FOREIGN KEY (article_id) REFERENCES articles (article_id)
+
+
+
+EXERCICE TARIF1 -----------------
+
+SELECT art.libelle AS NomArticle, CONCAT(t.qteminimum,' -> ' ,t.qtemaximum) AS Intervalle ,t.prix AS PleinPot,tp.prix AS PROMO
+FROM  tarif AS t
+INNER JOIN articles AS art 
+ON t.article_id = art.article_id 
+INNER JOIN tarifpromo AS tp
+ON tp.article_id = art.article_id AND t.qteminimum= tp.qteminimum AND t.qtemaximum = tp.qtemaximum
+GROUP BY NomArticle, Intervalle
+
+EXERCICE TARIF2 -----------------
+
+SELECT art.libelle AS NomArticle, CONCAT(t.qteminimum,' -> ' ,t.qtemaximum) AS Intervalle ,
+(CASE 
+ WHEN t.article_id = tp.article_id THEN tp.prix
+ ELSE t.prix
+END) AS Prix
+FROM  tarif AS t
+INNER JOIN articles AS art 
+ON t.article_id = art.article_id 
+LEFT JOIN tarifpromo AS tp
+ON tp.article_id = art.article_id AND t.qteminimum= tp.qteminimum AND t.qtemaximum = tp.qtemaximum
+GROUP BY Prix
+
+EXERCICE TARIF3 -----------------
+
+SELECT CONCAT(ventes.vente_id, '-', ventes.article_id) AS ID_Commande, 
+			art.libelle AS NomArticle, 
+			CONCAT(t.qteminimum,' -> ' ,t.qtemaximum) AS Intervalle ,
+			(CASE WHEN t.article_id = tp.article_id THEN tp.prix ELSE t.prix END) AS PrixUnitaire,
+            ventes.qte AS Quantité,
+			(CASE WHEN t.article_id = tp.article_id THEN tp.prix ELSE t.prix END)*ventes.qte AS Prix_Total
+FROM tarif AS t
+INNER JOIN articles AS art 
+	ON t.article_id = art.article_id 
+LEFT JOIN tarifpromo AS tp
+	ON tp.article_id = art.article_id AND t.qteminimum= tp.qteminimum AND t.qtemaximum = tp.qtemaximum 
+INNER JOIN ventes
+	ON ventes.article_id = art.article_id
+WHERE ventes.qte BETWEEN t.qteminimum AND  t.qtemaximum
+GROUP BY ID_Commande
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-.-.-.-.-.-.-.-.-.-.-.-.-.-EXISTS-.-.-.-.-.-.-.-.-.-.-.-.-.-
+
+SELECT nom_programme
+FROM programmes
+WHERE NOT EXISTS 
+(
+	SELECT programmation_id
+	FROM programmation
+	Where programmation.programmation_id = programmes.programme_id
+);
+
+
+DELETE : TOUJOURS TESTER AU SELECT AVANT
+
+SELECT c.nom_chaine
+FROM chaine AS c 
+LEFT JOIN programmation AS plan
+ON c.chaine_id = plan.chaine_id 
+WHERE plan.programme_id IS NULL
+
+
+DELETE
+FROM chaine AS c 
+LEFT JOIN programmation AS plan
+ON c.chaine_id = plan.chaine_id 
+WHERE plan.programme_id IS NULL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-.-.-.-.-.-.-.-.-.-JEAN-PIERRE-BOTTO-.-.-.-.-.-.-.-.-.-.-.-.-.-
+
+#------------------------------------------------------------
+#        Script MySQL.
+#------------------------------------------------------------
+
+
+
+#------------------------------------------------------------
+# Table: Article
+#------------------------------------------------------------
+
+CREATE TABLE Article(
+        Id_Article    int (11) Auto_increment  NOT NULL ,
+        NumeroArticle varchar(50) NOT NULL unique,
+        Designation   Varchar (25) ,
+        PrixUnitaire  DECIMAL (15,3)  ,
+        PRIMARY KEY (Id_Article )
+)ENGINE=InnoDB;
+
+
+#------------------------------------------------------------
+# Table: Client
+#------------------------------------------------------------
+
+CREATE TABLE Client(
+        Id_Client     int (11) Auto_increment  NOT NULL ,
+        NumeroClient  varchar(50) NOT NULL unique,
+        NomClient     Varchar (25) ,
+        AdresseClient Varchar (25) ,
+        PRIMARY KEY (Id_Client )
+)ENGINE=InnoDB;
+
+#------------------------------------------------------------
+# Table: Commande
+#------------------------------------------------------------
+
+CREATE TABLE Commande(
+        Id_Commande    int (11) Auto_increment  NOT NULL ,
+        NumeroCommande varchar(50) NOT NULL unique,
+        Date_Commande  Date NOT NULL ,
+        Id_Client      Int NOT NULL ,
+        foreign key(Id_Client) references Client(Id_Client),
+    	PRIMARY KEY (Id_Commande)
+)ENGINE=InnoDB;
+
+#------------------------------------------------------------
+# Table: LigneCommande
+#------------------------------------------------------------
+
+CREATE TABLE LigneCommande(
+    	Id_LigneCommande int NOT NULL,
+        Quantite    Int ,
+        Id_Commande Int NOT NULL ,
+    	foreign key(Id_Commande) references Commande(Id_Commande),
+        Id_Article  Int NOT NULL ,
+    	foreign key(Id_Article) references Article(Id_Article),
+        PRIMARY KEY (Id_LigneCommande)
+)ENGINE=InnoDB;
+
+ALTER TABLE Commande ADD CONSTRAINT FK_Commande_Id_Client FOREIGN KEY (Id_Client) REFERENCES Client(Id_Client);
+ALTER TABLE LigneCommande ADD CONSTRAINT FK_LigneCommande_Id_Commande FOREIGN KEY (Id_Commande) REFERENCES Commande(Id_Commande);
+ALTER TABLE LigneCommande ADD CONSTRAINT FK_LigneCommande_Id_Article FOREIGN KEY (Id_Article) REFERENCES Article(Id_Article);
+
+CREATE INDEX NumeroCommande_Indx ON Commande(NumeroCommande);
+CREATE INDEX NumeroArticle_Indx ON Article(NumeroArticle);
+CREATE INDEX NumeroClient_Indx ON Client(NumeroClient);
+
+INSERT INTO article (NumeroArticle, Designation, PrixUnitaire)
+values ('BJ001', 'ananas', '3.50'), ('BJ002', 'pomme', '1.60'), ('BJ003', 'goyave', '1.60');
+
+INSERT INTO client (NumeroClient, NomClient, AdresseClient)
+values ('CLT001', 'Dupont', 'Rezé'), ('CLT020', 'Marie', 'Marseille'), ('CLT030', 'Paul', 'Paris'), ('CLT040', 'Roger', 'MontPellier');
+
+CREATE TABLE produit(SELECT * FROM article);
+
+CREATE TABLE fournisseyr(SELECT * FROM client WHERE (2>3));
+
+INSERT INTO fournisseyr(SELECT * FROM client WHERE Client.Id_Client>2);
+
+CREATE TABLE facture(id serial primary key, Datefacture Date);
+
+ALTER TABLE table CHANGE 'column_name' 'new_column_name type';
+
+ALTER TABLE fournisseyr RENAME TO fournisseur ;
+
+ALTER TABLE 'table' MODIFY 'column' SET DEFAULT 'value';
+
+ALTER TABLE 'table' MODIFY 'column' DROP DEFAULT ;
+
+
+
+
+
+
+
+
+
+-.-.-.-.-.-.-.-.-.-SAVE & RELOAD-.-.-.-.-.-.-.-.-.-
+
+SAVE  -> 			 mysqldump –u nomUtilisateur -p [options] base_de_donnees 		> fichier_de_sortie
+exemple:		
+TOUT:	 			 mysqldump –u root           -p           dl21            		> D:\Desktop\sauvegarde_donnees_dl21.sql
+strct seulement:	 mysqldump –u root           -p    -d     dl21            		> D:\Desktop\sauvegarde_struct_dl21.sql
+1 table: 			 mysqldump –u root           -p           dl21 article    		> D:\Desktop\sauvegarde_article_dl21.sql
+2 tables: 			 mysqldump –u root           -p           dl21 article client	> D:\Desktop\sauvegarde_article_client_dl21.sql
+
+Options:
+--all-databases : sélectionne toutes les bases de données existantets
+--databases: bd1 bd2 bd3 sélectionne les base de données db1 db2 db3
+db1 -d tables : sauvegarde seulement les structures des tables dans la bd1
+db1 tab1 tab2 tab3 : sauvegarde les tables tab1, tab2,tab3 de la base de données db1
+
+
+--Création dune table de réception puis :
+
+RELOAD  ->  mysql –u nomUtilisateur    base_de_donnees < fichier_d_entree
+Exemples:
+			mysql –u root 			-p imie_dl21 	   < D:\Desktop\sauvegarde_donnees_dl21
+
+
+
+
+
+
+
+
+
+
+
+
+
+-.-.-.-.-.-.-.-.-.-USERS RIGHT-.-.-.-.-.-.-.-.-.-
+
+mysql.exe -u root -p
+password = root
+
+USE MySQL;
+SELECT host, user, authentication_string FROM user;
+CREATE USER 'pierret'@'localhost' IDENTIFIED BY '1234';
+GRANT CREATE ON *.* TO 'pierret'@'localhost';
+
+exit 
+
+{
+mysql.exe -u pierret -p
+password = 1234
+
+USE MySQL;
+SELECT * FROM user;
+} DENIED
+
+
+INSERT INTO user (host, user, authentication_string)
+VALUES('localhost','user',PASSWORD('pass'));
+FLUSH PRIVILEGES;
+
+table user:
+{
+Select_priv Y/N Sélection
+Insert_priv Y/N Insertion
+Update_priv Y/N Modification (de valeur)
+Delete_priv Y/N Effacement
+Index_priv Y/N Indexation
+Alter_priv Y/N Modification (de table ou de champ)
+Create_priv Y/N Creation
+Drop_priv Y/N Suppression
+Grant_priv Y/N Permission
+Reload_priv Y/N Relancer mysql
+Shutdown_priv Y/N Arreter mysql
+Process_priv Y/N Processus
+File_priv Y/N Lecture et écriture de fichiers (import/export)
+}
+
+UPDATE user SET authentication_string=PASSWORD('nouveau_mot_de_passe')
+WHERE user='toto';
+
+GRANT 'right'(column_list), 'right'(column_list)
+ON 'table'/'*'/'*.*'/'db_name.*'
+TO 'user1', 'user2'
+WITH 'options'
+
+GRANT ALL PRIVILEGES ON * TO toto@’%’ IDENTIFED BY 'password'; //Crée un compte si inexistant;
+
+REVOKE priv_type [(column_list)] [, priv_type [(column_list)]] ...
+ON {tbl_name | * | *.* | db_name.*} FROM user [, user]
+
+SET PASSWORD FOR 'jeffrey'@'%' = PASSWORD('biscuit');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-.-.-.-.-.-.-.-.-.-TP BOTTO-.-.-.-.-.-.-.-.-.-
+
+
+
+
+
+
+
