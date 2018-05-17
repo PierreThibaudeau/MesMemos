@@ -1,0 +1,38 @@
+
+//SYMFONY
+
+------------INSTALLER SYMFONY--------------
+php ‐r"file_put_contents('symfony',    file_get_contents('https://symfony.com/installer'));"
+
+------------CREER PROJET-------------------
+php symfony new project_name
+
+
+//DOCTRINE
+
+------------CREER DATABASE-----------------
+php app/console doctrine:database:create
+
+------------CREER ENTITÉS------------------
+php app/console generate:doctrine:entity
+
+-------CREER LES ACCESSEURS DOCTRINE-------
+php app/console generate:doctrine:crud
+
+----CREER LES TABLES LIÉÉS AUX ENTITÉS-----
+php app/console doctrine:schema:create
+
+
+//CONFIG
+
+----------------?--------?-----------------
+php app/console doctrine:fixtures:load
+
+-----DEPLACER LES ASSETS DU BUNDLE---------
+php app/console assets:install
+
+
+//RECUPERATION DE PROJET
+
+----METTRE A JOUR LES FICHIERS SYMFONY-----
+php composer.phar update

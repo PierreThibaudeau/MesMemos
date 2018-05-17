@@ -1,0 +1,50 @@
+cd projet
+php app/console server:run
+
+ARCHI: 
+app: 		config
+src: 		dev php
+vendor: dependances
+web: 		point d'entrée du projet coté serveur(pare-feu)
+
+app/config/config.yml -> point central de config
+
+pour supprimer un bundle:
+run server
+delete file
+app/AppKernel.php
+app/config/config.yml
+app/config/routing.yml
+
+renommer un bundle:
+->renommer aussi la classe
+->renommer le routing
+
+
+
+COMMANDES
+-------------------------------------------------------------
+LANCER SERVEUR
+php app/console server:run
+
+CREER BUNDLE
+php app/console generate:bundle
+
+CREER DATABASE
+php app/console doctrine:database:create
+	CREER ENTITÉS
+	php app/console generate:doctrine:entity
+	VALIDER SCHEMA
+	php app/console doctrine:schema:validate
+	CREER SCHEMA
+	php app/console doctrine:schema:create
+	MAJ SCHEMA
+	php app/console doctrine:schema:update [‐‐force] [‐‐dump‐sql]
+
+CREER CRUD
+php app/console generate:doctrine:crud
+
+CREER FICHIERS symfony/doctrine
+php composer.phar install
+MAJ FICHIERS symfony/doctrine
+php composer.phar update
